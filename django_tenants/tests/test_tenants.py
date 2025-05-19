@@ -333,17 +333,6 @@ class BaseSyncTest(BaseTestCase):
                    'django.contrib.contenttypes', )  # 1 table
     TENANT_APPS = ('django.contrib.sessions', )
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.INSTALLED_APPS = cls.SHARED_APPS + cls.TENANT_APPS
-
-        settings.SHARED_APPS = cls.SHARED_APPS
-        settings.TENANT_APPS = cls.TENANT_APPS
-        settings.INSTALLED_APPS = cls.INSTALLED_APPS
-
-        cls.available_apps = cls.INSTALLED_APPS
-
     def setUp(self):
         super().setUp()
         # Django calls syncdb by default for the test database, but we want
@@ -394,8 +383,9 @@ class TestSyncTenantsWithAuth(BaseSyncTest):
                    'django.contrib.sessions', )  # 1 table
     TENANT_APPS = ('django.contrib.sessions', )  # 1 table
 
-    def _pre_setup(self):
-        self.sync_shared()
+    @classmethod
+    def _pre_setup(cls):
+        cls.sync_shared()
         super()._pre_setup()
 
     def test_tenant_apps_and_shared_apps_can_have_the_same_apps(self):
